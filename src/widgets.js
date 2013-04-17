@@ -208,12 +208,10 @@ const ArtistAlbums = new Lang.Class({
         this.artist = artist
         this.albums = albums
         this.parent();
+        this.ui = new Gtk.Builder();
+        this.ui.add_from_resource('/org/gnome/music/ArtistAlbumsWidget.ui');
         this.set_border_width(24)
-        this.label = new Gtk.Label()
-        this.label.set_markup("<b>" + this.artist + "</b>")
-        this.label.set_alignment(0.0, 0.5)
-        this.pack_start(this.label, false, false, 0)
-        this.pack_start(new Gtk.HSeparator(), false, false, 12)
+        this.ui.get_object("artist").set_label(this.artist)
         for (var i=0; i < albums.length; i++)
             this.pack_start(new ArtistAlbumWidget(artist, albums[i]), false, false, 9);
         this.show_all();

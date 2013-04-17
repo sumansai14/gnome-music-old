@@ -4,5 +4,6 @@
     <file preprocess="xml-stripblanks">app-menu.ui</file>
     <file>application.css</file>
     <file>AlbumWidget.ui</file>
+    <file>ArtistAlbumsWidget.ui</file>
   </gresource>
 </gresources>
