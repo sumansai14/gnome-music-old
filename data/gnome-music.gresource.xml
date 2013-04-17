@@ -6,5 +6,6 @@
     <file>AlbumWidget.ui</file>
     <file>ArtistAlbumsWidget.ui</file>
     <file>ArtistAlbumWidget.ui</file>
+    <file>PlayerToolbar.ui</file>
   </gresource>
 </gresources>
