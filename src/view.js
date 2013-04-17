@@ -54,23 +54,12 @@ const LoadMoreButton = new Lang.Class({
     _init: function(counter) {
         this._block = false;
         this._counter = counter;
-        let child = new Gtk.Grid({ column_spacing: 10,
-                                   hexpand: true,
-                                   halign: Gtk.Align.CENTER,
-                                   visible: true });
+        let ui = new Gtk.Builder();
+        ui.add_from_resource('/org/gnome/music/LoadMoreButton.ui');
+        this._spinner = ui.get_object("spinner");
+        this._label = ui.get_object("label");
+        this.widget = ui.get_object("button");
 
-        this._spinner = new Gtk.Spinner({ halign: Gtk.Align.CENTER,
-                                          no_show_all: true });
-        this._spinner.set_size_request(16, 16);
-        child.add(this._spinner);
-
-        this._label = new Gtk.Label({ label: "Load More",
-                                      visible: true });
-        child.add(this._label);
-
-        this.widget = new Gtk.Button({ no_show_all: true,
-                                       child: child });
-        this.widget.get_style_context().add_class('documents-load-more');
         this.widget.connect('clicked', Lang.bind(this,
             function() {
                 this._label.label = "Loading...";

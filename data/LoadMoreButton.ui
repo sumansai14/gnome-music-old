@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- interface-requires gtk+ 3.6 -->
+  <object class="GtkButton" id="button">
+    <property name="visible">True</property>
+    <property name="can_focus">True</property>
+    <property name="receives_default">True</property>
+    <property name="no_show_all">True</property>
+    <style>
+      <class name="documents-load-more"/>
+    </style>
+    <child>
+      <object class="GtkGrid" id="LoadMoreButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="halign">center</property>
+        <property name="hexpand">True</property>
+        <property name="column_spacing">10</property>
+        <child>
+          <object class="GtkSpinner" id="spinner">
+            <property name="width_request">16</property>
+            <property name="height_request">16</property>
+            <property name="can_focus">False</property>
+            <property name="no_show_all">True</property>
+            <property name="halign">center</property>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">0</property>
+            <property name="width">1</property>
+            <property name="height">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Load More</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">0</property>
+            <property name="width">1</property>
+            <property name="height">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
