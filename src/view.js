@@ -389,16 +389,14 @@ const Artists = new Lang.Class({
     _init: function(header_bar, player) {
         this.parent("Artists", header_bar);
         this._artists = {};
-        this._artistAlbumsWidget = new Gtk.VBox();
         this.view.set_view_type(Gd.MainViewType.LIST);
         this.view.set_hexpand(false);
-        this._artistAlbumsWidget.set_hexpand(true);
-        var scrolledWindow = new Gtk.ScrolledWindow();
-        scrolledWindow.set_policy(
-            Gtk.PolicyType.NEVER,
-            Gtk.PolicyType.AUTOMATIC);
-        scrolledWindow.add(this._artistAlbumsWidget)
-        this._grid.attach(scrolledWindow, 1, 0, 1, 1);
+
+        let ui = new Gtk.Builder();
+        ui.add_from_resource('/org/gnome/music/Artists.ui');
+        this._artistAlbumsWidget = ui.get_object("artistAlbumsWidget");
+
+        this._grid.attach(ui.get_object("scrolledWindow"), 1, 0, 1, 1);
         this._addListRenderers();
         this.show_all();
 
