@@ -112,7 +112,7 @@ const Player = new Lang.Class({
     load: function(media) {
         var pixbuf;
 
-        this.emit("song-changed", this.currentTrack);
+        this.emit("song-changed", media);
 
         this._setDuration(media.get_duration());
         this.song_total_time_lbl.set_label(this.seconds_to_string (media.get_duration()));

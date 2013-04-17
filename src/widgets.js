@@ -33,6 +33,20 @@ const grilo = Grilo.grilo;
 const AlbumArtCache = imports.albumArtCache;
 const albumArtCache = AlbumArtCache.AlbumArtCache.getDefault();
 
+function getMethods(obj) {
+	  var result = [];
+	    for (var id in obj) {
+		        try {
+				      if (typeof(obj[id]) == "function") {
+					              result.push(id + ": " + obj[id].toString());
+						            }
+				          } catch (err) {
+						        result.push(id + ": inaccessible");
+							    }
+			  }
+	      return result;
+}
+
 const AlbumWidget = new Lang.Class({
     Name: "AlbumWidget",
     Extends: Gtk.EventBox,
@@ -69,33 +83,46 @@ const AlbumWidget = new Lang.Class({
 
 
         this.player.connect('song-changed', Lang.bind(this,
-            function(widget, id) {
-                // Highlight currently played song as bold
-                let iter = this.model.get_iter_from_string(id.toString())[1];
-                let item = this.model.get_value(iter, 5);
-                let title = "<b>" + item.get_title() + "</b>";
-                this.model.set_value(iter, 0, title);
-                // Display now playing icon
-                this.model.set_value(iter, 3, true);
-
-                // Make all previous songs shadowed
-                for (let i = 0; i < id; i++){
-                    let iter = this.model.get_iter_from_string(i.toString())[1];
-                    let item = this.model.get_value(iter, 5);
-                    let title = "<span color='grey'>" + item.get_title() + "</span>";
-                    this.model.set_value(iter, 0, title);
-                    this.model.set_value(iter, 3, false);
-                }
-
-                //Remove markup from the following songs
-                let i = parseInt(id) + 1;
+            function(widget, track) {
+		let songPosition = -1;
+		let i = 0;
+		let itemUrl = track.get_url();
+		// find if item is in the album
+		// FIXME we should use iter_next instead of getting a new iter from path
                 while(this.model.get_iter_from_string(i.toString())[0]) {
-                    let iter = this.model.get_iter_from_string(i.toString())[1];
-                    let item = this.model.get_value(iter, 5);
-                    this.model.set_value(iter, 0, item.get_title());
-                    this.model.set_value(iter, 3, false);
-                    i++;
-                }
+			let iter = this.model.get_iter_from_string(i.toString())[1];
+			if (this.model.get_value(iter, 5).get_url() == itemUrl) {
+				songPosition = i;
+				break
+			}
+			i++
+		}
+		if (songPosition < 0)
+			return true;
+
+                // Highlight currently played song as bold.
+		// Make all previous songs shadowed, 
+		// and remove markup from the following songs
+		i = 0;
+		while(this.model.get_iter_from_string(i.toString())[0]) {
+			let iter = this.model.get_iter_from_string(i.toString())[1];
+			let item = this.model.get_value(iter, 5);
+			let title= "";
+			if (i < songPosition) {
+				title = "<span color='grey'>" + item.get_title() + "</span>";
+				this.model.set_value(iter, 0, title);
+				this.model.set_value(iter, 3, false);
+			} else if (i == songPosition) {
+				title = "<b>" + item.get_title() + "</b>";
+				// Display now playing icon
+				this.model.set_value(iter, 3, true);
+			} else if (i > songPosition) {
+				title = item.get_title();
+				this.model.set_value(iter, 3, false);
+			}
+			this.model.set_value(iter, 0, title);
+			i++
+		}
                 return true;
             }
         ));
