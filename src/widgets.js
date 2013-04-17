@@ -40,16 +40,16 @@ const AlbumWidget = new Lang.Class({
     _init: function (player) {
         this.player = player;
 
-        let ui = new Gtk.Builder();
-        ui.add_from_resource('/org/gnome/music/AlbumWidget.ui');
-        this.model = ui.get_object("AlbumWidget_model");
+        this.ui = new Gtk.Builder();
+        this.ui.add_from_resource('/org/gnome/music/AlbumWidget.ui');
+        this.model = this.ui.get_object("AlbumWidget_model");
 
         this.view = new Gd.MainView({
             shadow_type:    Gtk.ShadowType.NONE
         });
         this.view.set_view_type(Gd.MainViewType.LIST);
         this.view.set_model(this.model);
-        
+
         this.view.connect('item-activated', Lang.bind(this,
             function(widget, id, path) {
                 let iter = this.model.get_iter (path)[1];
@@ -90,23 +90,17 @@ const AlbumWidget = new Lang.Class({
                 return true;
             }
         ));
-
-        this.cover =  ui.get_object("cover");
-        this.title_label = ui.get_object("title_label");
-        this.artist_label = ui.get_object("artist_label");
-        this.running_length_label_info = ui.get_object("running_length_label_info");
-        this.running_length = 0;
-
         this.parent();
 
-        let hbox = ui.get_object("box3");
+        let hbox = this.ui.get_object("box3");
         let child_view = this.view.get_children()[0];
         this.view.remove(child_view)
         hbox.pack_start(child_view, true, true, 0)
-        hbox.pack_start(new Gtk.Label(), true, true, 0)
 
-        this.add(ui.get_object("AlbumWidget"));
+        this.add(this.ui.get_object("AlbumWidget"));
         this._addListRenderers();
+        this.get_style_context().add_class("view");
+        this.get_style_context().add_class("content-view");
         this.show_all ();
     },
 
@@ -117,7 +111,7 @@ const AlbumWidget = new Lang.Class({
         var cells = cols[0].get_cells()
         cells[2].visible = false
         cells[1].visible = false
- 
+
         let nowPlayingSymbolRenderer = new Gtk.CellRendererPixbuf({ xpad: 0 });
         let path = "/usr/share/icons/gnome/scalable/actions/media-playback-start-symbolic.svg";
         nowPlayingSymbolRenderer.pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, -1, 16, true);
@@ -158,7 +152,6 @@ const AlbumWidget = new Lang.Class({
                     time = minutes + ":" + seconds;
                 durationRenderer.text = time;
             }));
-
     },
 
     update: function (artist, album, item) {
@@ -176,7 +169,8 @@ const AlbumWidget = new Lang.Class({
                 this.model.set(iter,
                     [0, 1, 2, 3, 4, 5],
                     [ track.get_title(), "", "", false, pixbuf, track ]);
-                this.running_length_label_info.set_text((parseInt(duration/60) + 1) + " min");
+                this.ui.get_object("running_length_label_info").set_text(
+                    (parseInt(duration/60) + 1) + " min");
             }
         }));
 
@@ -187,18 +181,20 @@ const AlbumWidget = new Lang.Class({
             let path = "/usr/share/icons/gnome/scalable/places/folder-music-symbolic.svg";
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, -1, 256, true);
         }
-        this.cover.set_from_pixbuf (pixbuf);
+        this.ui.get_object("cover").set_from_pixbuf (pixbuf);
 
         this.setArtistLabel(artist);
         this.setTitleLabel(album);
     },
 
     setArtistLabel: function(artist) {
-        this.artist_label.set_markup("<b><span size='large' color='grey'>" + artist + "</span></b>");
+        this.ui.get_object("artist_label").set_markup(
+            "<b><span size='large' color='grey'>" + artist + "</span></b>");
     },
 
     setTitleLabel: function(title) {
-        this.title_label.set_markup("<b><span size='large'>" + title + "</span></b>");
+        this.ui.get_object("title_label").set_markup(
+            "<b><span size='large'>" + title + "</span></b>");
     },
 
 });

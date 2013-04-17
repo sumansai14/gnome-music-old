@@ -1,42 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <!-- interface-requires gtk+ 3.0 -->
-  <object class="GtkBox" id="AlbumWidget">
+  <object class="GtkHBox" id="AlbumWidget">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
+    <property name="valign">center</property>
     <property name="homogeneous">True</property>
     <child>
-      <object class="GtkBox" id="box1">
+      <object class="GtkHBox" id="box1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="margin_left">16</property>
+        <property name="margin_top">16</property>
+        <property name="margin_bottom">16</property>
         <property name="spacing">32</property>
         <child>
-          <object class="GtkLabel" id="label2">
+          <object class="GtkVBox" id="vbox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-          </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox" id="vbox">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="orientation">vertical</property>
             <child>
-              <object class="GtkLabel" id="label1">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="padding">24</property>
-                <property name="position">0</property>
-              </packing>
+              <placeholder/>
             </child>
             <child>
               <object class="GtkImage" id="cover">
@@ -52,10 +35,9 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="artistBox">
+              <object class="GtkVBox" id="artistBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <child>
                   <object class="GtkLabel" id="title_label">
@@ -90,16 +72,15 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="infobox">
+              <object class="GtkHBox" id="infobox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="spacing">36</property>
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkBox" id="infobox_titles">
+                  <object class="GtkVBox" id="infobox_titles">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkLabel" id="released_label">
                         <property name="visible">True</property>
@@ -136,10 +117,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="infobox_values">
+                  <object class="GtkVBox" id="infobox_values">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkLabel" id="released_label_info">
                         <property name="visible">True</property>
@@ -185,7 +165,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
-            <property name="position">1</property>
+            <property name="position">0</property>
           </packing>
         </child>
       </object>
@@ -198,36 +178,26 @@
     <child>
       <object class="GtkScrolledWindow" id="scrolledWindow">
         <property name="visible">True</property>
-        <property name="can_focus">True</property>
+        <property name="can_focus">False</property>
+        <property name="margin_left">6</property>
+        <property name="margin_right">16</property>
+        <property name="margin_top">16</property>
+        <property name="margin_bottom">16</property>
         <child>
           <object class="GtkViewport" id="view">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkBox" id="box2">
+              <object class="GtkVBox" id="box2">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="orientation">vertical</property>
+                <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel" id="label3">
+                  <object class="GtkHBox" id="box3">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="padding">24</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkBox" id="box3">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="halign">start</property>
                     <property name="homogeneous">True</property>
-                    <child>
-                      <placeholder/>
-                    </child>
                     <child>
                       <placeholder/>
                     </child>
@@ -235,7 +205,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">1</property>
+                    <property name="position">0</property>
                   </packing>
                 </child>
               </object>
@@ -244,7 +214,7 @@
         </child>
       </object>
       <packing>
-        <property name="expand">True</property>
+        <property name="expand">False</property>
         <property name="fill">True</property>
         <property name="position">1</property>
       </packing>
