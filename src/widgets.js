@@ -28,8 +28,8 @@ const Lang = imports.lang;
 const Grl = imports.gi.Grl;
 const Query = imports.query;
 const Grilo = imports.grilo;
-
 const grilo = Grilo.grilo;
+
 const AlbumArtCache = imports.albumArtCache;
 const albumArtCache = AlbumArtCache.AlbumArtCache.getDefault();
 
@@ -185,6 +185,7 @@ const AlbumWidget = new Lang.Class({
 
         this.setArtistLabel(artist);
         this.setTitleLabel(album);
+        this.setReleasedLabel(item.get_creation_date().get_year());
     },
 
     setArtistLabel: function(artist) {
@@ -195,6 +196,11 @@ const AlbumWidget = new Lang.Class({
     setTitleLabel: function(title) {
         this.ui.get_object("title_label").set_markup(
             "<b><span size='large'>" + title + "</span></b>");
+    },
+
+    setReleasedLabel: function(year) {
+        this.ui.get_object("released_label_info").set_markup(
+            "<b><span color='grey'>" + year + "</span></b>");
     },
 });
 
@@ -226,6 +232,7 @@ const ArtistAlbumWidget = new Lang.Class({
 
         this.ui = new Gtk.Builder();
         this.ui.add_from_resource('/org/gnome/music/ArtistAlbumWidget.ui');
+        this.model = this.ui.get_object("liststore1");
 
         var pixbuf = albumArtCache.lookup (128, artist, album.get_title());
         if (pixbuf == null) {
@@ -234,14 +241,27 @@ const ArtistAlbumWidget = new Lang.Class({
         }
         this.ui.get_object("cover").set_from_pixbuf(pixbuf);
         this.ui.get_object("title").set_label(album.get_title());
+        if (album.get_creation_date()) {
+            this.ui.get_object("year").set_markup(
+                "<span color='grey'>(" + album.get_creation_date().get_year() + ")</span>");
+        }
 
         var tracks = [];
         grilo.getAlbumSongs(album.get_id(), Lang.bind(this, function (source, prefs, track) {
             if (track != null) {
                 tracks.push(track);
+                let iter = this.model.append();
+                track.origin = this;
+                track.iterator = iter;
+                let path = "/usr/share/icons/gnome/scalable/actions/media-playback-start-symbolic.svg";
+                let pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, -1, 16, true);
+                this.model.set(iter,
+                    [0, 1, 2, 3, 4, 5],
+                    [ track.get_title(), track.get_track_number(), "", false, pixbuf, track ]);
             }
         }));
-        this.pack_start(this.ui.get_object("ArtistAlbumWidget"), false, false, 0);
+
+        this.pack_start(this.ui.get_object("ArtistAlbumWidget"), true, true, 0);
         this.show_all()
     },
 });
