@@ -5,5 +5,6 @@
     <file>application.css</file>
     <file>AlbumWidget.ui</file>
     <file>ArtistAlbumsWidget.ui</file>
+    <file>ArtistAlbumWidget.ui</file>
   </gresource>
 </gresources>

@@ -196,9 +196,7 @@ const AlbumWidget = new Lang.Class({
         this.ui.get_object("title_label").set_markup(
             "<b><span size='large'>" + title + "</span></b>");
     },
-
 });
-
 
 const ArtistAlbums = new Lang.Class({
     Name: "ArtistAlbumsWidget",
@@ -225,29 +223,25 @@ const ArtistAlbumWidget = new Lang.Class({
     _init: function (artist, album) {
         this.parent();
         this.album = album;
-        this.cover = new Gtk.Image();
-        this.title = new Gtk.Label();
-        this.title.set_ellipsize(2);
+
+        this.ui = new Gtk.Builder();
+        this.ui.add_from_resource('/org/gnome/music/ArtistAlbumWidget.ui');
+
         var pixbuf = albumArtCache.lookup (128, artist, album.get_title());
         if (pixbuf == null) {
             let path = "/usr/share/icons/gnome/scalable/places/folder-music-symbolic.svg";
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, -1, 128, true);
         }
-        this.cover.set_from_pixbuf (pixbuf);
-        this.pack_start(this.cover, false, false, 0)
-        var vbox = new Gtk.VBox()
-        this.pack_start(vbox, true, true, 32)
-        this.title.set_markup("<span color='red'><b>" + album.get_title() + "</b></span>")
+        this.ui.get_object("cover").set_from_pixbuf(pixbuf);
+        this.ui.get_object("title").set_label(album.get_title());
 
         var tracks = [];
         grilo.getAlbumSongs(album.get_id(), Lang.bind(this, function (source, prefs, track) {
             if (track != null) {
                 tracks.push(track);
-                this.title.set_markup("<span color='blue'><b>" + album.get_title() + "</b> (" + track.get_creation_date() + ")</span>")
             }
         }));
-        this.title.set_alignment(0.0, 0.5)
-        vbox.pack_start(this.title, false, false, 0)
+        this.pack_start(this.ui.get_object("ArtistAlbumWidget"), false, false, 0);
         this.show_all()
     },
 });
