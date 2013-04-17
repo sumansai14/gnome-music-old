@@ -39,24 +39,17 @@ const AlbumWidget = new Lang.Class({
 
     _init: function (player) {
         this.player = player;
-        this.hbox = new Gtk.HBox ();
-        this.scrolledWindow = new Gtk.ScrolledWindow();
 
-        this.model = Gtk.ListStore.new([
-            GObject.TYPE_STRING,
-            GObject.TYPE_STRING,
-            GObject.TYPE_STRING,
-            GObject.TYPE_BOOLEAN,
-            GdkPixbuf.Pixbuf,
-            GObject.TYPE_OBJECT,
-            GObject.TYPE_BOOLEAN
-        ]);
+        let ui = new Gtk.Builder();
+        ui.add_from_resource('/org/gnome/music/AlbumWidget.ui');
+        this.model = ui.get_object("AlbumWidget_model");
 
         this.view = new Gd.MainView({
             shadow_type:    Gtk.ShadowType.NONE
         });
         this.view.set_view_type(Gd.MainViewType.LIST);
         this.view.set_model(this.model);
+        
         this.view.connect('item-activated', Lang.bind(this,
             function(widget, id, path) {
                 let iter = this.model.get_iter (path)[1];
@@ -65,8 +58,6 @@ const AlbumWidget = new Lang.Class({
                 this.player.play();
             })
         );
-
-
 
         this.player.connect('song-changed', Lang.bind(this,
             function(widget, id) {
@@ -100,73 +91,21 @@ const AlbumWidget = new Lang.Class({
             }
         ));
 
-        this.cover = new Gtk.Image();
-        this.vbox = new Gtk.VBox();
-        this.title_label = new Gtk.Label({label : ""});
-        this.artist_label = new Gtk.Label({label : ""});
+        this.cover =  ui.get_object("cover");
+        this.title_label = ui.get_object("title_label");
+        this.artist_label = ui.get_object("artist_label");
+        this.running_length_label_info = ui.get_object("running_length_label_info");
         this.running_length = 0;
-        this.released_label = new Gtk.Label()
-        this.released_label.set_markup ("<span color='grey'>Released</span>");
-        this.running_length_label = new Gtk.Label({});
-        this.running_length_label.set_markup ("<span color='grey'>Running Length</span>");
-        this.released_label_info = new Gtk.Label({label: "----"});
-        this.running_length_label_info = new Gtk.Label({label: "--:--"});
-        this.released_label.set_alignment(1.0, 0.5)
-        this.running_length_label.set_alignment(1.0, 0.5)
-        this.released_label_info.set_alignment(0.0, 0.5)
-        this.running_length_label_info.set_alignment(0.0, 0.5)
 
         this.parent();
-        this.hbox.set_homogeneous(true);
-        this.vbox.set_homogeneous(false);
-        this.scrolledWindow.set_policy(
-            Gtk.PolicyType.NEVER,
-            Gtk.PolicyType.AUTOMATIC);
 
-        var vbox = new Gtk.VBox()
-        var hbox = new Gtk.Box()
-        hbox.homogeneous = true
-        var child_view = this.view.get_children()[0];
+        let hbox = ui.get_object("box3");
+        let child_view = this.view.get_children()[0];
         this.view.remove(child_view)
         hbox.pack_start(child_view, true, true, 0)
         hbox.pack_start(new Gtk.Label(), true, true, 0)
 
-        vbox.pack_start(new Gtk.Label(), false, false, 24)
-        vbox.pack_start(hbox, true, true, 0)
-        this.scrolledWindow.add(vbox);
-
-        this.infobox = new Gtk.Box()
-        this.infobox.homogeneous = true;
-        this.infobox.spacing = 36
-        var box = new Gtk.VBox();
-        box.pack_start (this.released_label, false, false, 0)
-        box.pack_start (this.running_length_label, false, false, 0)
-        this.infobox.pack_start(box, true, true, 0)
-        box = new Gtk.VBox();
-        box.pack_start (this.released_label_info, false, false, 0)
-        box.pack_start (this.running_length_label_info, false, false, 0)
-        this.infobox.pack_start(box, true, true, 0)
-
-        this.vbox.pack_start (new Gtk.Label({label:""}), false, false, 24);
-        this.vbox.pack_start (this.cover, false, false, 0);
-
-        let artistBox = new Gtk.VBox();
-        artistBox.set_spacing(6);
-        artistBox.pack_start (this.title_label, false, false, 0);
-        artistBox.pack_start (this.artist_label, false, false, 0);
-
-        this.vbox.pack_start (artistBox, false, false, 24);
-        this.vbox.pack_start(this.infobox, false, false, 0);
-
-        let hbox = new Gtk.Box();
-        hbox.pack_start(new Gtk.Label(), true, true, 0);
-        hbox.pack_end(this.vbox, false, false, 0);
-        this.hbox.pack_start (hbox, true, true, 32);
-        this.hbox.pack_start (this.scrolledWindow, true, true, 0);
-
-        this.get_style_context ().add_class ("view");
-        this.get_style_context ().add_class ("content-view");
-        this.add(this.hbox);
+        this.add(ui.get_object("AlbumWidget"));
         this._addListRenderers();
         this.show_all ();
     },
@@ -304,12 +243,13 @@ const ArtistAlbumWidget = new Lang.Class({
         this.pack_start(this.cover, false, false, 0)
         var vbox = new Gtk.VBox()
         this.pack_start(vbox, true, true, 32)
-        this.title.set_markup("<span color='grey'><b>" + album.get_title() + "</b></span>")
+        this.title.set_markup("<span color='red'><b>" + album.get_title() + "</b></span>")
+
         var tracks = [];
         grilo.getAlbumSongs(album.get_id(), Lang.bind(this, function (source, prefs, track) {
             if (track != null) {
                 tracks.push(track);
-                this.title.set_markup("<span color='grey'><b>" + album.get_title() + "</b> (" + track.get_creation_date() + ")</span>")
+                this.title.set_markup("<span color='blue'><b>" + album.get_title() + "</b> (" + track.get_creation_date() + ")</span>")
             }
         }));
         this.title.set_alignment(0.0, 0.5)

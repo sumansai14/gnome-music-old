@@ -3,5 +3,6 @@
   <gresource prefix="/org/gnome/music">
     <file preprocess="xml-stripblanks">app-menu.ui</file>
     <file>application.css</file>
+    <file>AlbumWidget.ui</file>
   </gresource>
 </gresources>
