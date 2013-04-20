@@ -362,17 +362,10 @@ const Songs = new Lang.Class({
         listWidget.add_renderer(durationRenderer, Lang.bind(this,
             function(col, cell, model, iter) {
                 let item = model.get_value(iter, 5);
-                if (item) {
-                    let duration = item.get_duration ();
-                    var minutes = parseInt(duration / 60);
-                    var seconds = duration % 60;
-                    var time = null
-                    if (seconds < 10)
-                        time =  minutes + ":0" + seconds;
-                    else
-                        time = minutes + ":" + seconds;
-                    durationRenderer.text = time;
-                }
+		if (!item)
+			return;
+	        let duration = item.get_duration ();
+		durationRenderer.text = this.player.seconds_to_string(duration);
             }));
     },
 

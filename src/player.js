@@ -324,6 +324,8 @@ const Player = new Lang.Class({
 
     },
 
+    //TODO general helper function, if we get more of them, 
+    //it may be good to move them together
     seconds_to_string: function(duration){
         var minutes = parseInt( duration / 60 ) % 60;
         var seconds = duration % 60;

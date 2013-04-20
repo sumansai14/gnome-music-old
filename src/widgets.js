@@ -122,19 +122,13 @@ const AlbumWidget = new Lang.Class({
             function(col, cell, model, iter) {
                 let item = model.get_value(iter, 5);
                 let duration = item.get_duration ();
-                var minutes = parseInt(duration / 60);
-                var seconds = duration % 60;
-                var time = null
-                if (seconds < 10)
-                    time =  minutes + ":0" + seconds;
-                else
-                    time = minutes + ":" + seconds;
-                durationRenderer.text = time;
+		if (!item)
+			return;
+                durationRenderer.text = this.player.seconds_to_string(duration);
             }));
     },
 
     update: function (artist, album, item) {
-        var pixbuf = albumArtCache.lookup (256, artist, item.get_string(Grl.METADATA_KEY_ALBUM));
         let released_date = item.get_publication_date();
         if (released_date != null) {
             this.ui.get_object("released_label_info").set_text(
@@ -144,14 +138,14 @@ const AlbumWidget = new Lang.Class({
         }
         let duration = 0;
         this.model.clear()
-        var tracks = [];
+        let tracks = [];
+	let path = "/usr/share/icons/gnome/scalable/actions/media-playback-start-symbolic.svg";
+	let pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, -1, 16, true);
         grilo.getAlbumSongs(item.get_id(), Lang.bind(this, function (source, prefs, track) {
             if (track != null) {
                 tracks.push(track);
                 duration = duration + track.get_duration();
                 let iter = this.model.append();
-                let path = "/usr/share/icons/gnome/scalable/actions/media-playback-start-symbolic.svg";
-                let pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, -1, 16, true);
                 this.model.set(iter,
                     [0, 1, 2, 3, 4, 5],
                     [ track.get_title(), "", "", false, pixbuf, track ]);
@@ -163,6 +157,7 @@ const AlbumWidget = new Lang.Class({
         this.player.setPlaylist(tracks);
         this.player.setCurrentTrack(tracks[0]);
 
+        pixbuf = albumArtCache.lookup (256, artist, item.get_string(Grl.METADATA_KEY_ALBUM));
         if (pixbuf == null) {
             let path = "/usr/share/icons/gnome/scalable/places/folder-music-symbolic.svg";
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, -1, 256, true);
@@ -175,11 +170,11 @@ const AlbumWidget = new Lang.Class({
 
         this.player.connect('song-changed', Lang.bind(this,
             function(widget, id) {
-		let title = "";
-		let visible = false;
 		let i = 0;
 		//go through the songs in the album
 		while(this.model.get_iter_from_string(i.toString())[0]) {
+			let title = "";
+			let visible = false;
 			let iter = this.model.get_iter_from_string(i.toString())[1];
 			let item = this.model.get_value(iter, 5);
 			// Make all previous songs shadowed, and hide the icon
