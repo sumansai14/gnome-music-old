@@ -43,12 +43,12 @@ const AlbumWidget = new Lang.Class({
         this.scrolledWindow = new Gtk.ScrolledWindow();
 
         this.model = Gtk.ListStore.new([
+            GObject.TYPE_STRING, /*title*/
             GObject.TYPE_STRING,
             GObject.TYPE_STRING,
-            GObject.TYPE_STRING,
-            GObject.TYPE_BOOLEAN,
-            GdkPixbuf.Pixbuf,
-            GObject.TYPE_OBJECT,
+            GObject.TYPE_BOOLEAN,/*icon shown*/
+            GdkPixbuf.Pixbuf,    /*icon*/
+            GObject.TYPE_OBJECT, /*song object*/
             GObject.TYPE_BOOLEAN
         ]);
         this.ui = new Gtk.Builder();
@@ -71,10 +71,10 @@ const AlbumWidget = new Lang.Class({
 
         this.parent();
 
-        let hbox = this.ui.get_object("box3");
+        let view_box = this.ui.get_object("view");
         let child_view = this.view.get_children()[0];
         this.view.remove(child_view)
-        hbox.pack_start(child_view, true, true, 0)
+        view_box.add(child_view)
 
         this.add(this.ui.get_object("AlbumWidget"));
         this._addListRenderers();
@@ -106,7 +106,7 @@ const AlbumWidget = new Lang.Class({
             new Gd.StyledTextRenderer({ xpad: 16 });
         typeRenderer.set_property("ellipsize", 3);
         typeRenderer.set_property("xalign", 0.0);
-        // This function is not neede, just add the renderer!
+        // This function is not needed, just add the renderer!
         listWidget.add_renderer(typeRenderer, Lang.bind(this,
             function(col, cell, model, iter) {}
         ));
@@ -175,32 +175,27 @@ const AlbumWidget = new Lang.Class({
 
         this.player.connect('song-changed', Lang.bind(this,
             function(widget, id) {
-                // Highlight currently played song as bold
-                let iter = this.model.get_iter_from_string(id.toString())[1];
-                let item = this.model.get_value(iter, 5);
-                let title = "<b>" + item.get_title() + "</b>";
-                this.model.set_value(iter, 0, title);
-                // Display now playing icon
-                this.model.set_value(iter, 3, true);
-
-                // Make all previous songs shadowed
-                for (let i = 0; i < id; i++){
-                    let iter = this.model.get_iter_from_string(i.toString())[1];
-                    let item = this.model.get_value(iter, 5);
-                    let title = "<span color='grey'>" + item.get_title() + "</span>";
-                    this.model.set_value(iter, 0, title);
-                    this.model.set_value(iter, 3, false);
-                }
-
-                //Remove markup from the following songs
-                let i = parseInt(id) + 1;
-                while(this.model.get_iter_from_string(i.toString())[0]) {
-                    let iter = this.model.get_iter_from_string(i.toString())[1];
-                    let item = this.model.get_value(iter, 5);
-                    this.model.set_value(iter, 0, item.get_title());
-                    this.model.set_value(iter, 3, false);
-                    i++;
-                }
+		let title = "";
+		let visible = false;
+		let i = 0;
+		//go through the songs in the album
+		while(this.model.get_iter_from_string(i.toString())[0]) {
+			let iter = this.model.get_iter_from_string(i.toString())[1];
+			let item = this.model.get_value(iter, 5);
+			// Make all previous songs shadowed, and hide the icon
+			// Display now playing icon, andremove markup from the following songs
+			if (i < id) {
+				title = "<span color='grey'>" + item.get_title() + "</span>"; 
+			} else if (i == id) {
+				title = "<b>" + item.get_title() + "</b>";
+				visible = true;
+			} else
+				title = item.get_title();
+			
+			this.model.set_value(iter, 0, title);
+			this.model.set_value(iter, 3, visible);
+			i++;
+		}
                 return true;
             }
         ));
