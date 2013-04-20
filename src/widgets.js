@@ -133,8 +133,6 @@ const AlbumWidget = new Lang.Class({
         if (released_date != null) {
             this.ui.get_object("released_label_info").set_text(
                 released_date.get_year().toString());
-        } else {
-            this.ui.get_object("released_label_info").set_text("----");
         }
         let duration = 0;
         this.model.clear()
@@ -164,9 +162,9 @@ const AlbumWidget = new Lang.Class({
         }
         this.ui.get_object("cover").set_from_pixbuf (pixbuf);
 
-        this.setArtistLabel(artist);
-        this.setTitleLabel(album);
-        this.setReleasedLabel(item.get_creation_date().get_year());
+        this.ui.get_object("artist_label").set_text(artist);
+        this.ui.get_object("title_label").set_text(album);
+        this.ui.get_object("released_label_info").set_text(item.get_creation_date().get_year().toString());
 
         this.player.connect('song-changed', Lang.bind(this,
             function(widget, id) {
@@ -178,7 +176,7 @@ const AlbumWidget = new Lang.Class({
 			let iter = this.model.get_iter_from_string(i.toString())[1];
 			let item = this.model.get_value(iter, 5);
 			// Make all previous songs shadowed, and hide the icon
-			// Display now playing icon, andremove markup from the following songs
+			// Display now playing icon, and remove markup from the following songs
 			if (i < id) {
 				title = "<span color='grey'>" + item.get_title() + "</span>"; 
 			} else if (i == id) {
@@ -194,21 +192,6 @@ const AlbumWidget = new Lang.Class({
                 return true;
             }
         ));
-    },
-
-    setArtistLabel: function(artist) {
-        this.ui.get_object("artist_label").set_markup(
-            "<b><span size='large' color='grey'>" + artist + "</span></b>");
-    },
-
-    setTitleLabel: function(title) {
-        this.ui.get_object("title_label").set_markup(
-            "<b><span size='large'>" + title + "</span></b>");
-    },
-
-    setReleasedLabel: function(year) {
-        this.ui.get_object("released_label_info").set_markup(
-            "<span>" + year + "</span>");
     },
 });
 
